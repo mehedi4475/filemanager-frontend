@@ -1,0 +1,19 @@
+.folder-list{
+  padding: 0;
+}
+.folder-list li {
+  list-style: none;
+  margin-bottom: 5px;
+}
+.folder-list li a{
+  display: block;
+  padding: 5px 20px;
+  border: 1px solid #dddddd;
+  border-radius: 3px;
+  color: #333333;
+  text-decoration: none;
+  cursor: pointer;
+}
+.folder-list li.active a{
+  background-color: skyblue;
+}
