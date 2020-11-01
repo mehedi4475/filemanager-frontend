@@ -55,15 +55,31 @@ export default class AuthService {
     });
   }
 
+  uploadFile(fileName, path) {
+    const formData = new FormData()
+    formData.append('fileName', fileName);
+    formData.append('path', path);
+
+    return fetch(`${this.domain}/upload`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + this.getToken()
+      },
+      body: formData,
+    }).then(res => { 
+      return Promise.resolve(res);
+    });
+  }
+
   login(username, password) {
-    return this.fetch(`${this.domain}/login`, {
+    return this.fetch(`${this.domain}/api/login`, {
       method: 'POST',
       body: JSON.stringify({
-        username,
-        password,
+        email: username,
+        password: password,
       }),
     }).then(res => {
-      this.setToken(res.token); 
+      this.setToken(res.success.token); 
       return Promise.resolve(res);
     });
   }

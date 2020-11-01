@@ -6,7 +6,9 @@ import ApiService from './ApiService';
 
 const Header = (props) => {
     const [show, setShow] = useState(false);
+    const [showFileUpload, setShowFileUpload] = useState(false);
     const [folderName, setFolderName] = useState('');
+    const [file, setFile] = useState(null);
     
     const Api = new ApiService();
     const location = useLocation();
@@ -17,6 +19,13 @@ const Header = (props) => {
         setFolderName('');
     };
     const handleShow = () => setShow(true);
+
+
+    const handleFileClose = () => {
+        setShowFileUpload(false);
+        setFile(null);
+    };
+    const handleFileShow = () => setShowFileUpload(true);
 
 
     const handleFormSubmit = (e) => {
@@ -78,6 +87,24 @@ const Header = (props) => {
         }
     }
 
+    const handleFileUpload = (e) => {
+        e.preventDefault();
+
+        if(file){
+            Api.uploadFile(file, location.pathname.substring(1))
+                .then(res => {
+                    handleFileClose();
+                    props.callUpdateHome();
+                })
+                .catch(err => {
+                    handleFileClose();
+                    console.log(err)
+                });
+        } else {
+            alert('Please Select a file')
+        }
+    }
+
     const handleLogout = () => {
         Api.logout()
         history.push('/login');
@@ -92,7 +119,7 @@ const Header = (props) => {
                 <Nav><Button variant="outline-secondary" onClick={handleCopy}>Copy</Button></Nav>
                 <Nav className="ml-2"><Button variant="outline-secondary" onClick={handleMove}>Move</Button></Nav>
                 <Nav className="ml-2"><Button variant="outline-secondary" onClick={handlePaste}>Paste</Button></Nav>
-                <Nav className="ml-2"><Button variant="outline-secondary">Create File</Button></Nav>
+                <Nav className="ml-2"><Button variant="outline-secondary" onClick={handleFileShow}>Upload File</Button></Nav>
                 <Nav className="ml-2"><Button variant="outline-secondary" onClick={handleShow}>Create Folder</Button></Nav>
                 <Nav className="ml-2"><Button variant="secondary" onClick={handleLogout}>Logout</Button></Nav>
             </Navbar.Collapse>
@@ -116,6 +143,28 @@ const Header = (props) => {
                 </Button>
                 <Button variant="primary" onClick={handleFormSubmit}>
                     Save Changes
+                </Button>
+            </Modal.Footer>
+        </Modal>
+
+        <Modal show={showFileUpload} onHide={handleFileClose}>
+            <Modal.Header closeButton>
+                <Modal.Title>Upload New File</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form onSubmit={handleFileUpload}>
+                    <Form.Group>
+                        <Form.Label>Select File</Form.Label>
+                        <Form.Control size="md" type="file" onChange={(e) => {setFile(e.target.files[0])}} />
+                    </Form.Group>
+                </Form>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={handleFileClose}>
+                    Close
+                </Button>
+                <Button variant="primary" onClick={handleFileUpload}>
+                    Upload
                 </Button>
             </Modal.Footer>
         </Modal>
